@@ -2,11 +2,12 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
+import com.soon.event.SearchEvent;
 import com.soon.exception.ErrorCode;
 import com.soon.exception.RequestException;
 import com.soon.utils.ApiReqValueStorage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -21,9 +22,12 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Service
 public class KeywordSearchService {
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ApiReqValueStorage apiReqValueStorage;
 
     public Mono<List<SearchResultDto>> searchByAccuracy(String query, String sortType) {
+        applicationEventPublisher.publishEvent(new SearchEvent(this, query));
+
         if (sortType.equals(SortType.ACCURACY.getValue())) {
             return kakaoSearchResultToMono(query, SortType.ACCURACY);
         }
@@ -35,6 +39,8 @@ public class KeywordSearchService {
     }
 
     public Mono<List<SearchResultDto>> searchByRecency(String query, String sortType) {
+        applicationEventPublisher.publishEvent(new SearchEvent(this, query));
+
         if (sortType.equals(SortType.RECENCY.getValue())) {
             return kakaoSearchResultToMono(query, SortType.RECENCY);
         }
