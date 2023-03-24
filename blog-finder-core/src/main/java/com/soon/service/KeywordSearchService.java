@@ -22,12 +22,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Service
 public class KeywordSearchService {
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final ApiReqValueStorage apiReqValueStorage;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Mono<List<SearchResultDto>> searchByAccuracy(String query, String sortType) {
-        applicationEventPublisher.publishEvent(new SearchEvent(this, query));
-
         if (sortType.equals(SortType.ACCURACY.getValue())) {
             return kakaoSearchResultToMono(query, SortType.ACCURACY);
         }
@@ -39,8 +37,6 @@ public class KeywordSearchService {
     }
 
     public Mono<List<SearchResultDto>> searchByRecency(String query, String sortType) {
-        applicationEventPublisher.publishEvent(new SearchEvent(this, query));
-
         if (sortType.equals(SortType.RECENCY.getValue())) {
             return kakaoSearchResultToMono(query, SortType.RECENCY);
         }
@@ -63,6 +59,9 @@ public class KeywordSearchService {
                 .header("Authorization", "KakaoAK " + apiReqValueStorage.getKakaoKey())
                 .retrieve()
                 .bodyToMono(Map.class)
+                .doOnSuccess(map -> {
+                    applicationEventPublisher.publishEvent(new SearchEvent(this, query));
+                })
                 .map(map -> (List<Map>) map.get("documents"))
                 .flatMapIterable(Function.identity())
                 .map(document -> SearchResultDto.builder()
@@ -89,6 +88,9 @@ public class KeywordSearchService {
                 .header("X-Naver-Client-Secret", apiReqValueStorage.getNaverClientSecret())
                 .retrieve()
                 .bodyToMono(Map.class)
+                .doOnSuccess(map -> {
+                    applicationEventPublisher.publishEvent(new SearchEvent(this, query));
+                })
                 .map(map -> (List<Map>) map.get("items"))
                 .flatMapIterable(Function.identity())
                 .map(item -> SearchResultDto.builder()
@@ -99,5 +101,6 @@ public class KeywordSearchService {
                         .url(item.get("link").toString())
                         .build())
                 .collectList();
+
     }
 }

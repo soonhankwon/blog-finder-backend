@@ -20,6 +20,7 @@ public class SearchEventListener implements ApplicationListener<SearchEvent> {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onApplicationEvent(SearchEvent event) {
+        log.info("Received search event for keyword: {}", event.getKeyword());
         String keyword = event.getKeyword();
         String topic = "keyword";
         kafkaTemplate.send(topic, keyword, keyword);
