@@ -2,6 +2,8 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
+import com.soon.exception.ErrorCode;
+import com.soon.exception.RequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List
         if(sortType.equals(SortType.RECENCY.getValue())) {
             return keywordSearchService.searchByRecency(query, sortType);
         } else {
-            throw new IllegalArgumentException();
+            throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         }
     }
 
@@ -36,7 +38,7 @@ public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List
         if(sortType.equals(SortType.DATE.getValue())) {
             return keywordSearchService.searchByRecency(query, sortType);
         } else {
-            throw new IllegalArgumentException();
+            throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         }
     }
 }

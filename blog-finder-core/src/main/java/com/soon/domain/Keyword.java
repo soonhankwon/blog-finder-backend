@@ -1,5 +1,7 @@
 package com.soon.domain;
 
+import com.soon.exception.ErrorCode;
+import com.soon.exception.RequestException;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -22,10 +24,10 @@ public class Keyword {
 
     public Keyword(String word, Long count) {
         if(isWordNullOrEmpty(word)) {
-            throw new IllegalArgumentException("검색어는 1글자 이상이어야 합니다.");
+            throw new RequestException(ErrorCode.KEYWORD_INVALID);
         }
         if(!isCountMinimum(count)) {
-            throw new IllegalArgumentException();
+            throw new RequestException(ErrorCode.SEARCH_COUNT_INVALID);
         }
         this.word = convertUseCaseWord(word);
         this.count = MIN_COUNT;
