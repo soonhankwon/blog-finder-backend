@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.1'
