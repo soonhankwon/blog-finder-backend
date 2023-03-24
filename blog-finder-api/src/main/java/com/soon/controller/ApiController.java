@@ -1,5 +1,6 @@
 package com.soon.controller;
 
+import com.soon.dto.KeywordRankDto;
 import com.soon.dto.SearchResultDto;
 import com.soon.event.SearchEvent;
 import com.soon.service.KeywordSearchServiceRouter;
