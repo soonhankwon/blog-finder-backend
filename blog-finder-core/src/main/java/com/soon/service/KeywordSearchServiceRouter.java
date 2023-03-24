@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class KeywordSearchRouter implements SearchServiceRouter<Mono<List<SearchResultDto>>>{
+public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List<SearchResultDto>>>{
 
     private final KeywordSearchService keywordSearchService;
 
