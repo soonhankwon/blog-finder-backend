@@ -2,30 +2,37 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
-@Service
-public class KeywordSearchRouter implements SearchService<SearchResultDto>{
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class KeywordSearchRouter implements SearchServiceRouter<Mono<List<SearchResultDto>>>{
+
+    private final KeywordSearchService keywordSearchService;
 
     @Override
-    public SearchResultDto searchByKakao(String query, String sortType) {
+    public Mono<List<SearchResultDto>> searchByKakao(String query, String sortType) {
         if(sortType.equals(SortType.ACCURACY.getValue())) {
-            return new SearchResultDto();
+            return keywordSearchService.searchByAccuracy(query, SortType.ACCURACY);
         }
         if(sortType.equals(SortType.RECENCY.getValue())) {
-            return new SearchResultDto();
+            return keywordSearchService.searchByRecency(query, SortType.RECENCY);
         } else {
             throw new IllegalArgumentException();
         }
     }
 
     @Override
-    public SearchResultDto searchByNaver(String query, String sortType) {
+    public Mono<List<SearchResultDto>> searchByNaver(String query, String sortType) {
         if(sortType.equals(SortType.SIM.getValue())) {
-            return new SearchResultDto();
+            return keywordSearchService.searchByAccuracy(query, SortType.SIM);
         }
         if(sortType.equals(SortType.DATE.getValue())) {
-            return new SearchResultDto();
+            return keywordSearchService.searchByRecency(query, SortType.DATE);
         } else {
             throw new IllegalArgumentException();
         }
