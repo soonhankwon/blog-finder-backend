@@ -1,6 +1,5 @@
 package com.soon.controller;
 
-import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import com.soon.event.SearchEvent;
 import com.soon.service.KeywordSearchServiceRouter;
@@ -8,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationListener;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
