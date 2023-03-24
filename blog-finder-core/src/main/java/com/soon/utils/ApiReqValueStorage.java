@@ -2,8 +2,10 @@ package com.soon.utils;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Getter
+@Component
 public class ApiReqValueStorage {
     @Value("${kakao.api.url}")
     private String kakaoUrl;
@@ -14,7 +16,7 @@ public class ApiReqValueStorage {
     @Value("${kakao.api.key}")
     private String kakaoKey;
 
-    private int kakaoPagination;
+    private final int kakaoPagination = 10;
 
     @Value("${naver.api.url}")
     private String naverUrl;
@@ -28,5 +30,5 @@ public class ApiReqValueStorage {
     @Value("${naver.api.client.secret}")
     private String naverClientSecret;
 
-    private int naverDisplay;
+    private final int naverDisplay = 10;
 }
