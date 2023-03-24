@@ -23,7 +23,6 @@ import java.util.function.Function;
 @Service
 public class KeywordSearchService {
     private final ApiReqValueStorage apiReqValueStorage;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Mono<List<SearchResultDto>> searchByAccuracy(String query, String sortType) {
         if (sortType.equals(SortType.ACCURACY.getValue())) {
@@ -59,9 +58,6 @@ public class KeywordSearchService {
                 .header("Authorization", "KakaoAK " + apiReqValueStorage.getKakaoKey())
                 .retrieve()
                 .bodyToMono(Map.class)
-                .doOnSuccess(map -> {
-                    applicationEventPublisher.publishEvent(new SearchEvent(this, query));
-                })
                 .map(map -> (List<Map>) map.get("documents"))
                 .flatMapIterable(Function.identity())
                 .map(document -> SearchResultDto.builder()
@@ -88,9 +84,6 @@ public class KeywordSearchService {
                 .header("X-Naver-Client-Secret", apiReqValueStorage.getNaverClientSecret())
                 .retrieve()
                 .bodyToMono(Map.class)
-                .doOnSuccess(map -> {
-                    applicationEventPublisher.publishEvent(new SearchEvent(this, query));
-                })
                 .map(map -> (List<Map>) map.get("items"))
                 .flatMapIterable(Function.identity())
                 .map(item -> SearchResultDto.builder()
@@ -101,6 +94,5 @@ public class KeywordSearchService {
                         .url(item.get("link").toString())
                         .build())
                 .collectList();
-
     }
 }
