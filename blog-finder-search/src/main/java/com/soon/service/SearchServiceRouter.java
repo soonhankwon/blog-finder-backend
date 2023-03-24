@@ -1,6 +1,6 @@
 package com.soon.service;
 
-public interface SearchService<T> {
+public interface SearchServiceRouter<T> {
     T searchByKakao(String query, String sortType);
     T searchByNaver(String query, String sortType);
 }
