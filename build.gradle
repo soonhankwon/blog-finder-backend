@@ -65,6 +65,7 @@ project(':blog-finder-core') {
 project(':blog-finder-api') {
     dependencies {
         implementation(project(":blog-finder-core"))
+        implementation(project(":blog-finder-search"))
     }
 }
 
