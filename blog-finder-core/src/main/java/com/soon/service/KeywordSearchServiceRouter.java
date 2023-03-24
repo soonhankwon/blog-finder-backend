@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
+    @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByKakao(String query, String sortType) {
         pubSearchEvent(query);
         if(sortType.equals(SortType.ACCURACY.getValue())) {
@@ -35,6 +37,7 @@ public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByNaver(String query, String sortType) {
         pubSearchEvent(query);
         if(sortType.equals(SortType.SIM.getValue())) {
