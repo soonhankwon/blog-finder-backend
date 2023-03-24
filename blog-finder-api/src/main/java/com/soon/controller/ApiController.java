@@ -1,5 +1,6 @@
 package com.soon.controller;
 
+import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import com.soon.service.KeywordSearchServiceRouter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,19 +15,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "카카오 블로그 검색 API")
+@Tag(name = "블로그 검색 API")
 public class ApiController {
     private final KeywordSearchServiceRouter keywordSearchServiceRouter;
 
     @GetMapping("/search/accuracy")
-    @Operation(summary = "정확도순 블로그 검색 API")
-    public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam String query, String sortType) {
+    @Operation(summary = "카카오 정확도순 블로그 검색 API")
+    public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam("query") String query, @RequestParam("sortType") String sortType) {
         return keywordSearchServiceRouter.searchByKakao(query, sortType);
     }
 
     @GetMapping("/search/recency")
-    @Operation(summary = "최신순 블로그 검색 API")
-    public Mono<List<SearchResultDto>> apiSearchRecency(@RequestParam String query, String sortType) {
+    @Operation(summary = "카카오 최신순 블로그 검색 API")
+    public Mono<List<SearchResultDto>> apiSearchRecency(@RequestParam("query") String query, @RequestParam("sortType") String sortType) {
         return keywordSearchServiceRouter.searchByKakao(query, sortType);
     }
 }

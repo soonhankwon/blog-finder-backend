@@ -4,11 +4,14 @@ import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import com.soon.utils.ApiReqValueStorage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,23 +21,23 @@ import java.util.function.Function;
 public class KeywordSearchService {
     private final ApiReqValueStorage apiReqValueStorage;
 
-    public Mono<List<SearchResultDto>> searchByAccuracy(String query, SortType sortType) {
-        if (sortType.getValue().equals(SortType.ACCURACY.getValue())) {
-            return kakaoSearchResultToMono(query, sortType);
+    public Mono<List<SearchResultDto>> searchByAccuracy(String query, String sortType) {
+        if (sortType.equals(SortType.ACCURACY.getValue())) {
+            return kakaoSearchResultToMono(query, SortType.ACCURACY);
         }
-        if (sortType.getValue().equals(SortType.SIM.getValue())) {
-            return naverSearchResultToMono(query, sortType);
+        if (sortType.equals(SortType.SIM.getValue())) {
+            return naverSearchResultToMono(query, SortType.SIM);
         } else {
             throw new IllegalArgumentException();
         }
     }
 
-    public Mono<List<SearchResultDto>> searchByRecency(String query, SortType sortType) {
-        if (sortType.getValue().equals(SortType.ACCURACY.getValue())) {
-            return kakaoSearchResultToMono(query, sortType);
+    public Mono<List<SearchResultDto>> searchByRecency(String query, String sortType) {
+        if (sortType.equals(SortType.RECENCY.getValue())) {
+            return kakaoSearchResultToMono(query, SortType.RECENCY);
         }
-        if (sortType.getValue().equals(SortType.SIM.getValue())) {
-            return naverSearchResultToMono(query, sortType);
+        if (sortType.equals(SortType.DATE.getValue())) {
+            return naverSearchResultToMono(query, SortType.DATE);
         } else {
             throw new IllegalArgumentException();
         }
@@ -58,8 +61,8 @@ public class KeywordSearchService {
                         .blogname(document.get("blogname").toString())
                         .title(document.get("title").toString())
                         .contents(document.get("contents").toString())
-                        .thumbnail(document.get("title").toString())
-                        .datetime(LocalDateTime.parse(document.get("datetime").toString()))
+                        .thumbnail(document.get("thumbnail").toString())
+                        .datetime(LocalDateTime.parse(document.get("datetime").toString(), DateTimeFormatter.ISO_DATE_TIME))
                         .url(document.get("url").toString())
                         .build())
                 .collectList();
@@ -83,8 +86,8 @@ public class KeywordSearchService {
                 .map(item -> SearchResultDto.builder()
                         .blogname(item.get("bloggername").toString())
                         .title(item.get("title").toString())
-                        .contents(item.get("contents").toString())
-                        .datetime(LocalDateTime.parse(item.get("postdate").toString()))
+                        .contents(item.get("description").toString())
+                        .datetime(LocalDate.parse(item.get("postdate").toString(), DateTimeFormatter.ofPattern("yyyyMMdd")).atStartOfDay())
                         .url(item.get("link").toString())
                         .build())
                 .collectList();
