@@ -1,7 +1,6 @@
 package com.soon.controller;
 
 import com.soon.domain.Keyword;
-import com.soon.dto.KeywordRankDto;
 import com.soon.dto.SearchResultDto;
 import com.soon.event.SearchEvent;
 import com.soon.service.KeywordSearchServiceRouter;
@@ -23,16 +22,9 @@ public class ApiController {
     private final KeywordSearchServiceRouter keywordSearchServiceRouter;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @GetMapping("/search/accuracy")
-    @Operation(summary = "카카오 정확도순 블로그 검색 API")
+    @GetMapping("/search")
+    @Operation(summary = "카카오 정확도순 & 최신순 블로그 검색 API")
     public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam("query") String query, @RequestParam("sortType") String sortType) {
-        applicationEventPublisher.publishEvent(new SearchEvent(this, new Keyword(query)));
-        return keywordSearchServiceRouter.searchByKakao(query, sortType);
-    }
-
-    @GetMapping("/search/recency")
-    @Operation(summary = "카카오 최신순 블로그 검색 API")
-    public Mono<List<SearchResultDto>> apiSearchRecency(@RequestParam("query") String query, @RequestParam("sortType") String sortType) {
         applicationEventPublisher.publishEvent(new SearchEvent(this, new Keyword(query)));
         return keywordSearchServiceRouter.searchByKakao(query, sortType);
     }
