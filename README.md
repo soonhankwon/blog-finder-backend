@@ -71,7 +71,6 @@ docker-compose start
 > - SEARCH_COUNT : 검색횟수 (Index)
 
 #### Data Type
-> - 인메모리 데이터베이스 사용 제약으로 데이터 타입의 크기 설정은 따로 하지 않음
 > - VARCHAR(255) : 키워드의 길이는 구글 기준(90자)임으로 충분하다고 예상
 > - BIGINT : 대용량 트래픽이 예상되는 검색횟수에 사용
 
@@ -99,7 +98,7 @@ docker-compose start
   
 - sort : recency (최신순)
   
-- size : 한 번에 보여줄 검색결과 수
+- size : 한 번에 보여줄 검색결과 수 (default : 10)
   
 - page : 페이지네이션
 
