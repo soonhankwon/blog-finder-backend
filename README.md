@@ -22,7 +22,7 @@
 - JUnit5, Mockito
 
 ## API
-- [상세 API Notion Page](https://amusing-child-e0e.notion.site/API-f0dadfba4dae48249ec18d58caa1c8da)
+- [상세 API Notion Page](https://amusing-child-e0e.notion.site/Blog-Finder-API-34302840b73c42098c9171447ce15352)
 - [Swagger UI - API Module](http://localhost:8080/swagger-ui/index.html)
 - [Swagger UI - Stream Module](http://localhost:8081/swagger-ui/index.html)
 
