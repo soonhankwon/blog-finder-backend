@@ -26,7 +26,11 @@
 - [Swagger UI - API Module](http://localhost:8080/swagger-ui/index.html)
 - [Swagger UI - Stream Module](http://localhost:8081/swagger-ui/index.html)
 
-## 프로젝트 실행방법
+<details>
+<summary><strong> 프로젝트 실행방법 </strong></summary>
+<div markdown="1">
+<br>
+
 1. Docker로 카프카 및 주키퍼 이미지를 가져온다.
 ````Shell
 docker pull bitnami/kafka:latest
@@ -43,6 +47,9 @@ docker-compose start
 ````
 - kafka 서버가 구동되지 않았다면, **docker-compose start**를 다시한번 실행한다.
 5. module-api (localhost:8080) 어플리케이션을 실행한다.
+
+</div>
+</details>
 
 ## 프로젝트 설계 내용 및 이유
 
@@ -72,8 +79,9 @@ docker-compose start
 > - blog-finder-api : 비동기 방식으로 오픈소스 API에서 데이터를 받아서 제공 & consumer 모듈로 실시간 데이터 전송
 > - blog-finder-core : keyword **도메인** 모듈
 > - blog-finder-consumer : kafka message broker를 기반으로한 **데이터 수집 모듈** & DB에 실시간으로 데이터를 저장
-> - blog-finder-search : core 에서 구현하는 searchservice의 인터페이스를 가지고 있는 모듈
-> - API -> CORE <- CONSUMER / CORE -> SEARCH 의 의존성 방향을 가지고 있다.
+> - blog-finder-search : core 에서 구현하는 search service의 인터페이스를 가지고 있는 모듈
+> - API -> CORE <- CONSUMER
+> - CORE -> SEARCH 의 의존성 방향을 가지고 있다.
 > - CORE는 **도메인**과 핵심 비즈니스로직 담당. 따라서 CORE는 도메인에만 집중할 수 있도록 구성
 > - 도메인 자체의 서비스 로직에 집중할 수 있어 테스트 용이 및 도메인을 사용하는 타 모듈에서 중복 코드를 제거할 수 있도록 개선
 > - MySQL DB는 http://localhost:3306 사용하도록 구축
