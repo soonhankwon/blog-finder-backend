@@ -23,7 +23,7 @@
 
 ## API
 - [상세 API Notion Page](https://amusing-child-e0e.notion.site/Blog-Finder-API-34302840b73c42098c9171447ce15352)
-- [Swagger UI - API Module](http://localhost:8080/swagger-ui/index.html)
+- [Swagger UI - API](http://localhost:8080/swagger-ui/index.html)
 
 <details>
 <summary><strong> 프로젝트 실행방법 </strong></summary>
