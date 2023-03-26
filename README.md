@@ -68,7 +68,7 @@ docker-compose start
 
 > - ID : 인조키 (PK)
 > - WORD :  단어 (Index)
-> - SEARCH_COUNT : 검색횟수 (Index)
+> - COUNT : 검색횟수 (Index)
 
 #### Data Type
 > - VARCHAR(255) : 키워드의 길이는 구글 기준(90자)임으로 충분하다고 예상
