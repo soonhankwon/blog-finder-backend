@@ -1,16 +1,17 @@
 package com.soon.event;
 
+import com.soon.domain.Keyword;
 import org.springframework.context.ApplicationEvent;
 
 public class SearchEvent extends ApplicationEvent {
-    private final String keyword;
+    private final Keyword keyword;
 
-    public SearchEvent(Object source, String keyword) {
+    public SearchEvent(Object source, Keyword keyword) {
         super(source);
         this.keyword = keyword;
     }
 
-    public String getKeyword() {
+    public Keyword getKeyword() {
         return this.keyword;
     }
 }
