@@ -2,10 +2,12 @@ package com.soon.domain;
 
 import com.soon.exception.ErrorCode;
 import com.soon.exception.RequestException;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @Table(name = "keyword", indexes = {
@@ -33,16 +35,12 @@ public class Keyword {
         this.count = MIN_COUNT;
     }
 
+    public Keyword(String word) {
+        this.word = convertUseCaseWord(word);
+    }
+
     private boolean isCountMinimum(Long count) {
         return count >= MIN_COUNT;
-    }
-
-    public String getWord() {
-        return this.word;
-    }
-
-    public Long getCount() {
-        return this.count;
     }
 
     private String convertUseCaseWord(String word) {
