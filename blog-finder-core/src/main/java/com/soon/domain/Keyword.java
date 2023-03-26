@@ -4,13 +4,13 @@ import com.soon.exception.ErrorCode;
 import com.soon.exception.RequestException;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "keyword", indexes = {
+        @Index(name = "idx_word", columnList = "word"),
+        @Index(name = "idx_count", columnList = "count")})
 public class Keyword {
     public static final long MIN_COUNT = 1;
 
