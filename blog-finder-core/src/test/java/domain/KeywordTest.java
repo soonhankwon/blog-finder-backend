@@ -1,6 +1,7 @@
 package domain;
 
 import com.soon.domain.Keyword;
+import com.soon.exception.RequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class KeywordTest {
+
+    @Test
+    @DisplayName("키워드 공백 제거 테스트")
+    void removeSpaceWord() {
+        Keyword keyword = new Keyword("!@#     SoOn");
+        assertThat(keyword.getWord()).isEqualTo("soon");
+    }
 
     @Test
     @DisplayName("키워드 특수문자 제거 & 소문자로 변환 테스트")
@@ -29,7 +37,7 @@ public class KeywordTest {
     void keywordWithEmpty() {
         assertThatThrownBy(() -> {
             new Keyword("", 1L);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(RequestException.class);
     }
 
     @Test
@@ -37,7 +45,7 @@ public class KeywordTest {
     void keywordWithNull() {
         assertThatThrownBy(() -> {
             new Keyword(null, 1L);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(RequestException.class);
     }
 
     @Test
@@ -45,6 +53,6 @@ public class KeywordTest {
     void countUnderTheMinimum() {
         assertThatThrownBy(() -> {
             new Keyword("soon", -1L);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(RequestException.class);
     }
 }
