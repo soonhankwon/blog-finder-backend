@@ -13,7 +13,7 @@
 - SpringBoot 2.7.9
 - Spring WebFlux
 - Gradle
-- H2 database
+- MySQL
 - JPA
 - Kafka 3.1.2
 - resilience4j 1.7.1
@@ -32,7 +32,7 @@
 docker pull bitnami/kafka:latest
 docker pull bitnami/zookeeper:latest
 ````
-2. 터미널에서 프로젝트의 module-stream/resources 까지 이동 및 아래의 명령어를 실행한다.
+2. 터미널에서 프로젝트의 blog-finder-consumer/resources 까지 이동 및 아래의 명령어를 실행한다.
 ````Shell
 docker-compose up
 ````
@@ -60,8 +60,8 @@ docker-compose start
 #### Keyword Table
 
 > - ID : 인조키 (PK)
-> - WORD :  단어
-> - SEARCH_COUNT : 검색횟수
+> - WORD :  단어 (Index)
+> - SEARCH_COUNT : 검색횟수 (Index)
 
 #### Data Type
 > - 인메모리 데이터베이스 사용 제약으로 데이터 타입의 크기 설정은 따로 하지 않음
@@ -69,13 +69,14 @@ docker-compose start
 > - BIGINT : 대용량 트래픽이 예상되는 검색횟수에 사용
 
 ### 멀티 모듈 구성
-> - module-api : 비동기 방식으로 오픈소스 API에서 데이터를 받아 반환 & stream 모듈로 실시간 데이터 전송
-> - module-core : keyword **도메인** 모듈
-> - module-stream : kafka message broker를 기반으로한 **데이터 수집 모듈** & DB에 실시간으로 데이터를 저장
-> - API -> CORE <- CONSUMER 의 의존성 방향을 가지고 있다.
-> - CORE는 순수 **도메인**만 담당하도록 의존성을 설정하지 않았다. 따라서 CORE는 도메인에만 집중할 수 있도록 구성
+> - blog-finder-api : 비동기 방식으로 오픈소스 API에서 데이터를 받아서 제공 & consumer 모듈로 실시간 데이터 전송
+> - blog-finder-core : keyword **도메인** 모듈
+> - blog-finder-consumer : kafka message broker를 기반으로한 **데이터 수집 모듈** & DB에 실시간으로 데이터를 저장
+> - blog-finder-search : core 에서 구현하는 searchservice의 인터페이스를 가지고 있는 모듈
+> - API -> CORE <- CONSUMER / CORE -> SEARCH 의 의존성 방향을 가지고 있다.
+> - CORE는 **도메인**과 핵심 비즈니스로직 담당. 따라서 CORE는 도메인에만 집중할 수 있도록 구성
 > - 도메인 자체의 서비스 로직에 집중할 수 있어 테스트 용이 및 도메인을 사용하는 타 모듈에서 중복 코드를 제거할 수 있도록 개선
-> - In-Memory DB H2는 http://localhost:8081/h2-console/을 사용하도록 구축
+> - MySQL DB는 http://localhost:3306 사용하도록 구축
 
 ### 카카오 API의 키워드로 블로그 검색
 > - **카카오 API** 키워드 블로그 검색 사용 [카카오 API 링크](https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-blog)
@@ -96,12 +97,12 @@ docker-compose start
 
 ````Java
 WebClient.builder()
-                .baseUrl(url)
+                .baseUrl(apiReqValueStorage.getKakaoUrl())
                 .build().get()
-                .uri(builder -> builder.path(path)
+                .uri(builder -> builder.path(apiReqValueStorage.getKakaoPath())
                         .queryParam("query", query)
-                        .queryParam("sort", sortMethod)
-                        .queryParam("page", PAGINATION_PAGE)
+                        .queryParam("sort", sortType.getValue())
+                        .queryParam("page", apiReqValueStorage.getKakaoPagination())
                         .build())
 ```` 
   
@@ -119,20 +120,20 @@ WebClient.builder()
 - display : 10 (한 번에 표시할 검색 결과 개수)
 
 ````Java
-WebClient.builder()
-                .baseUrl(url)
+ WebClient.builder()
+                .baseUrl(apiReqValueStorage.getNaverUrl())
                 .build().get()
-                .uri(uriBuilder -> uriBuilder.path(path)
+                .uri(uriBuilder -> uriBuilder.path(apiReqValueStorage.getNaverPath())
                         .queryParam("query", query)
-                        .queryParam("display", MAX_DISPLAY)
-                        .queryParam("sort", SORT_DATE)
+                        .queryParam("display", apiReqValueStorage.getNaverDisplay())
+                        .queryParam("sort", sortType.getValue())
                         .build())
 ```` 
 </div>
 </details>
 
 ### 인기검색어 TOP10 조회
-> - module-stream 에 저장된 데이터를 module-api 에서 요청하도록 구현 (API TO API)
+> - blog-finder-consumer 를 통해 수집 & 저장된 데이터를 blog-finder-api 에서 요청하도록 구현
 > - JPA를 사용하여 검색횟수를 내림차순으로 정렬 후 TOP10 키워드 & 검색횟수 리스트 조회
 ````Java
 List<Keyword> findTop10ByOrderBySearchCountDesc();
@@ -147,21 +148,19 @@ List<Keyword> findTop10ByOrderBySearchCountDesc();
 > - 서버에서 수행되는 작업 중 하나가 완료되기를 기다리는 동안 다른 작업을 수행할 수 있어 서버의 성능과 처리량을 향상
 > - 따라서 대규모 트래픽과 데이터 핸들링의 안정성을 개선 
 
-#### 이벤트 기반 + 비동기처리로 데이터 수집 모듈인 module-stream으로 실시간 데이터 전송
+#### 이벤트 기반 + 비동기처리로 데이터 수집 모듈인 blog-finder-consumer로 실시간 데이터 전송
+> - 빠른 이벤트 처리를 위해 컨트롤러 단에서 이벤트가 발생하도록 테스트 후 적용 (데이터 정합성 보다는 **검색 기능**에 초점)
 > - **ApplicationEventPublisher**를 사용하여 SearchEvent를 Pub
-> - 데이터 정확성을 위해 TransactionListener 사용 & **@Async**를 사용하여 비동기 처리 전송
+> - 데이터 정확성을 위해 TransactionListener 사용 & **@Async**를 사용하여 비동기 처리 전송 
 > - 이벤트 기반 비동기처리로 오픈소스 API에서 받는 응답 작업에 영향이 없도록 결합도 개선
 <details>
 <summary><strong> CODE </strong></summary>
 <div markdown="1">
  
 ````Java  
-public Mono<List<SearchResultResDto>> searchByAccuracy(String query) {
-        if (isKeywordNullOrEmpty(query)) {
-            new RequestException(ErrorCode.KEYWORD_INVALID);
-        }
-        pubSearchEvent(query);
-        return getSearchListMono(query, SORT_ACCURACY);
+public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam("query") String query, @RequestParam("sortType") String sortType) {
+        applicationEventPublisher.publishEvent(new SearchEvent(this, new Keyword(query)));
+        return keywordSearchServiceRouter.searchByKakao(query, sortType);
     }
 ````
 
@@ -170,7 +169,7 @@ public Mono<List<SearchResultResDto>> searchByAccuracy(String query) {
 
 ### 검색어 데이터 수집시 동시성 이슈
 #### 카프카 메세지 브로커를 사용한 키워드 별 검색 횟수의 정확도 보장
-> - module-api 에서 보내는 실시간 검색어 데이터를 module-stream 의 **카프카 메세지 브로커**가 받도록 설계
+> - blog-finder-api 에서 보내는 실시간 검색어 데이터를 blog-finder-consumer 의 **카프카 메세지 브로커**가 받도록 설계
 > - 후보군으로 Key-Value 구조의 Redis를 생각하였으나, 대량의 트래픽과 데이터에 적합하지 않다고 생각(캐싱 비용)
 > - 카프카를 사용함으로써 검색어를 **고유한 파티션 키**로 사용하여 해싱을 통해 동일한 레코드들이 동일한 파티션에 도착하는 것을 보장
 > - 메세지를 consume 하면서 DB에 키워드와 검색횟수를 저장 및 업데이트 하도록 구현
@@ -178,7 +177,7 @@ public Mono<List<SearchResultResDto>> searchByAccuracy(String query) {
 ### 카카오API 장애 발생 시 네이버 블로그 검색API 데이터 제공
 #### resilience4j를 사용한 서킷브레이커로 API 전환 및 장애 회복 
 > - 멀티 모듈 구조에서는 **서로의 모듈이 의존함**에 따라 한 모듈의 장애가 나면 다른 모듈에도 장애가 일어날 확률이 높다.
-> - module-api 와 module-stream 사이의 의존성은 없지만, API에서 STREAM으로 데이터를 실시간 전송하고 있는 구조
+> - blog-finder-api 와 module-finder-stream 사이의 의존성은 없지만, API에서 CONSUMER로 데이터를 실시간 전송하고 있는 구조
 > - 따라서, 데이터 수집의 정확성에 영향을 받게 될 가능성이 있다.
 > - 또한, 호스팅할 경우 서버가 가지고 있는 스레드가 API서버와 통신하는 데 몰리게될 것 임으로 모든 모듈로의 **장애 전파** 가능
 > - **resilience4j**를 사용한 **서킷브레이커** 구현으로 에러가 60% 이상 일어나면 서킷브레이커가 오픈된다.
