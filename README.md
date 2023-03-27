@@ -13,7 +13,7 @@
 - SpringBoot 2.7.9
 - Spring WebFlux
 - Gradle
-- MySQL
+- MySQL 8.0.31
 - JPA
 - Kafka 3.1.2
 - resilience4j 1.7.1
@@ -39,13 +39,13 @@ docker pull bitnami/zookeeper:latest
 ````Shell
 docker-compose up
 ````
-3. module-stream (localhost:8081) 어플리케이션을 실행한다.
-4. module-stream/resources 에서 아래의 명령어를 실행한다.
+3. blog-finder-consumer (localhost:8081) 어플리케이션을 실행한다.
+4. blog-finder-consumer/resources 에서 아래의 명령어를 실행한다.
 ````Shell
 docker-compose start
 ````
 - kafka 서버가 구동되지 않았다면, **docker-compose start**를 다시한번 실행한다.
-5. module-api (localhost:8080) 어플리케이션을 실행한다.
+5. blog-consumer-api (localhost:8080) 어플리케이션을 실행한다.
 
 </div>
 </details>
@@ -55,8 +55,9 @@ docker-compose start
 ### 개요
 - 이 프로젝트는 **카카오 오픈 API**를 사용하여 구현한 **블로그 검색 서비스**입니다.
 - 트래픽이 많고, 저장되어 있는 데이터가 많음을 고려하여 **멀티 모듈 아키텍처**를 사용하여 **모듈간 의존성을 제약**하여 설계
-- API간 통신에 Async & Non-blocking 방식의 **WebClient & WebFlux**를 사용하여 서버 성능 개선
+- API간 통신에 **Async & Non-blocking** 방식의 **WebClient & WebFlux**를 사용하여 서버 성능 개선
 - 실시간 검색 이벤트 발생시 **ApplicationListener & @Async**를 사용하여 키워드를 비동기 전송하여 검색 기능에 영향을 받지 않도록 개선
+- 해당 기술 적용 간 Jmeter를 통한 **성능 및 동시성 테스트**를 통해 기술을 비교해서 적용, 검색 성능 **약20%**, 동시 접속시 성능 **약200%** 개선 및 동시성 이슈시 데이터 정확도 검증 
 - 키워드 별로 **검색된 횟수의 정확도**를 보장하기 위해서 Key-Value 구조의 **카프카 메세지 브로커**를 사용하여 검색 횟수를 저장
 - 카프카를 통한 검색 키워드 데이터 수집 & API 모듈에서 인기검색어 TOP10을 제공하도록 설계 
 - 카카오 블로그 검색 API가 외부상황에 의해 장애가 발생할 경우 **서킷브레이커**를 오픈하여 네이버 블로그 API를 통해 데이터를 제공하도록 구현
@@ -82,7 +83,7 @@ docker-compose start
 > - CORE -> SEARCH 의 의존성 방향을 가지고 있다.
 > - CORE는 **도메인**과 핵심 비즈니스로직 담당. 따라서 CORE는 도메인에만 집중할 수 있도록 구성
 > - 도메인 자체의 서비스 로직에 집중할 수 있어 테스트 용이 및 도메인을 사용하는 타 모듈에서 중복 코드를 제거할 수 있도록 개선
-> - MySQL DB는 http://localhost:3306 사용하도록 구축
+> - MySQL DB는 http://localhost:3306/{DB} 사용하도록 구축
 
 ### 카카오 API의 키워드로 블로그 검색
 > - **카카오 API** 키워드 블로그 검색 사용 [카카오 API 링크](https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-blog)
@@ -157,7 +158,7 @@ List<Keyword> findTop10ByOrderBySearchCountDesc();
 #### 이벤트 기반 + 비동기처리로 데이터 수집 모듈인 blog-finder-consumer로 실시간 데이터 전송
 > - 빠른 이벤트 처리를 위해 컨트롤러 단에서 이벤트가 발생하도록 테스트 후 적용 (데이터 정합성 보다는 **검색 기능**에 초점)
 > - **ApplicationEventPublisher**를 사용하여 SearchEvent를 Pub
-> - 데이터 정확성을 위해 TransactionListener 사용 & **@Async**를 사용하여 비동기 처리 전송 
+> - 데이터 정확성을 위해 TransactionalEventListener 사용 & **@Async**를 사용하여 비동기 처리 전송 
 > - 이벤트 기반 비동기처리로 오픈소스 API에서 받는 응답 작업에 영향이 없도록 결합도 개선
 <details>
 <summary><strong> CODE </strong></summary>
@@ -180,11 +181,27 @@ public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam("query") Stri
 > - 카프카를 사용함으로써 검색어를 **고유한 파티션 키**로 사용하여 해싱을 통해 동일한 레코드들이 동일한 파티션에 도착하는 것을 보장
 > - 메세지를 consume 하면서 DB에 키워드와 검색횟수를 저장 및 업데이트 하도록 구현
 
+### 테스트를 통한 성능 개선 및 버그 픽스
+#### WebFlux 와 @Async를 적용한 Event & Listener 구현 시 테스트를 통한 버그 픽스
+> - WebFlux & Client 의 **Async & Non-Blocking** 방식으로 이벤트 Pub 시 Mono의 데이터 방출 방식과 트랜잭션의 타이밍이 맞지않아 중복 이벤트가 발생하는 문제 발생
+> - Jmeter 테스트를 진행하면서, 중복 이벤트 발생 케이스인 EventListener / 서비스 메서드 안에서 이벤트 Pub 시 두 가지 케이스 캐치
+> - EventListener -> TransactionalEventListener / 컨트롤러 단에서 이벤트 Pub 으로 버그 픽스
+
+#### Jmeter를 사용하여 **성능 및 동시성 테스트** 진행 및 데이터 정확도 검증
+> - 성능 테스트를 통하여 점진적으로 성능 개선 
+> - 기존 방식에서 Latency avg **약20%** , TPS **약21.3%** 개선
+- [성능 테스트](https://amusing-child-e0e.notion.site/edbefac60ab0436fba290a915b8abeb4)
+> - 동시성 테스트를 통한 다중 사용자 접속시 성능 개선 & 검증
+> - 기존 방식에서 Latency avg **약252%** 개선, TPS **약187%** 개선
+- [동시성 테스트](https://amusing-child-e0e.notion.site/87c1948dce754c979541e0873c7bbaa6)
+> - 데이터 정확도 DB에서 정확한 카운트 확인하여 검증 & 에러율 0%
+
 ### 카카오API 장애 발생 시 네이버 블로그 검색API 데이터 제공
-#### resilience4j를 사용한 서킷브레이커로 API 전환 및 장애 회복 
+#### resilience4j를 사용한 서킷브레이커로 API 전환 및 장애 회복
+> - 카카오 API 장애 발생 시 네이버 API로 전환하도록 하여 검색 기능 회복 
 > - 멀티 모듈 구조에서는 **서로의 모듈이 의존함**에 따라 한 모듈의 장애가 나면 다른 모듈에도 장애가 일어날 확률이 높다.
-> - blog-finder-api 와 module-finder-stream 사이의 의존성은 없지만, API에서 CONSUMER로 데이터를 실시간 전송하고 있는 구조
-> - 따라서, 데이터 수집의 정확성에 영향을 받게 될 가능성이 있다.
+> - blog-finder-api 와 blog-finder-consumer 사이의 의존성은 없지만, API에서 CONSUMER로 데이터를 실시간 전송하고 있는 구조
+> - 따라서, 데이터 수집의 정확성에 영향을 받게 될 가능성 또한 있다.
 > - 또한, 호스팅할 경우 서버가 가지고 있는 스레드가 API서버와 통신하는 데 몰리게될 것 임으로 모든 모듈로의 **장애 전파** 가능
 > - **resilience4j**를 사용한 **서킷브레이커** 구현으로 에러가 60% 이상 일어나면 서킷브레이커가 오픈된다.
 > - 10분동안 네이버 API로 전환하도록 fallbackMethod를 구현, 10분이 지나면 **half-open** 상태로 전환
