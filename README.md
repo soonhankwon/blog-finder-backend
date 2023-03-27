@@ -190,10 +190,10 @@ public Mono<List<SearchResultDto>> apiSearchAccuracy(@RequestParam("query") Stri
 #### Jmeter를 사용하여 **성능 및 동시성 테스트** 진행 및 데이터 정확도 검증
 > - 성능 테스트를 통하여 점진적으로 성능 개선 
 > - 기존 방식에서 Latency avg **약20%** , TPS **약21.3%** 개선
-- [성능 테스트](https://amusing-child-e0e.notion.site/edbefac60ab0436fba290a915b8abeb4)
+- [Jmeter 성능 테스트 노션 페이지](https://amusing-child-e0e.notion.site/edbefac60ab0436fba290a915b8abeb4)
 > - 동시성 테스트를 통한 다중 사용자 접속시 성능 개선 & 검증
 > - 기존 방식에서 Latency avg **약252%** 개선, TPS **약187%** 개선
-- [동시성 테스트](https://amusing-child-e0e.notion.site/87c1948dce754c979541e0873c7bbaa6)
+- [Jmeter 동시성 테스트 노션 페이지](https://amusing-child-e0e.notion.site/87c1948dce754c979541e0873c7bbaa6)
 > - 데이터 정확도 DB에서 정확한 카운트 확인하여 검증 & 에러율 0%
 
 ### 카카오API 장애 발생 시 네이버 블로그 검색API 데이터 제공
