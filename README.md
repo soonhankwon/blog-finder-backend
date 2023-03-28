@@ -76,7 +76,7 @@ docker-compose start
 > - BIGINT : 대용량 트래픽이 예상되는 검색횟수에 사용
 
 ### 멀티 모듈 구성
-> - blog-finder-api : 비동기 방식으로 오픈소스 API에서 데이터를 받아서 제공 & consumer 모듈로 실시간 데이터 전송
+> - blog-finder-api : 비동기 방식으로 오픈 API에서 데이터를 받아서 제공 & consumer 모듈로 실시간 데이터 전송
 > - blog-finder-core : keyword **도메인** 모듈
 > - blog-finder-consumer : kafka message broker를 기반으로한 **데이터 수집 모듈** & DB로 실시간 데이터를 저장
 > - blog-finder-search : core 에서 구현하는 search service의 인터페이스를 가지고 있는 모듈
@@ -151,7 +151,7 @@ List<Keyword> findTop10ByOrderByCountDesc();
 
 ### 대량 트래픽 및 데이터 핸들링 이슈
 > * 대량의 트래픽 및 이에 따른 데이터가 많음을 염두한다.
-#### 오픈소스 API사용시 Spring WebFlux를 사용한 비동기식 API 모듈 구성
+#### 오픈 API사용시 Spring WebFlux를 사용한 비동기식 API 모듈 구성
 > - 블로그 검색 서비스의 특성상 한 자원에 동시에 접근해도 무방하다고 판단 **비동기식 module-api** 구축
 > - **WebFlux**에서 제공하는 리액티브 프로그래밍을 사용하여, 이를 **WebClient**에서 **Async & Non-Blocking**으로 요청 처리, **Mono**로 응답을 받도록 구현
 > - 서버에서 수행되는 작업 중 하나가 완료되기를 기다리는 동안 다른 작업을 수행할 수 있어 서버의 성능과 처리량을 향상
