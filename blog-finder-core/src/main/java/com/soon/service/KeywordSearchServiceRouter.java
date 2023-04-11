@@ -18,33 +18,40 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List<SearchResultDto>>> {
 
-    private final KeywordSearchService keywordSearchService;
+    private final KakaoSearchService kakaoSearchService;
+    private final NaverSearchService naverSearchService;
     private static final String BREAKER = "breaker";
 
     @Override
     @CircuitBreaker(name = BREAKER, fallbackMethod = "searchByNaver")
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByKakao(String query, String sortType) {
-        if (sortType.equals(SortType.ACCURACY.getValue())) {
-            return keywordSearchService.searchByAccuracy(query, sortType);
-        }
-        if (sortType.equals(SortType.RECENCY.getValue())) {
-            return keywordSearchService.searchByRecency(query, sortType);
-        } else {
+        if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
+        } else {
+            return kakaoSearchService.search(query, sortType);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByNaver(String query, String sortType, RuntimeException e) {
-        if (sortType.equals(SortType.ACCURACY.getValue())) {
-            return keywordSearchService.searchByAccuracy(query, "sim");
-        }
-        if (sortType.equals(SortType.RECENCY.getValue())) {
-            return keywordSearchService.searchByRecency(query, "date");
-        } else {
+        if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
+        } else {
+            return naverSearchService.search(query, convertSortTypeForNaver(sortType));
+        }
+    }
+
+    private boolean isSortTypeValid(String sortType) {
+        return (sortType.equals(SortType.ACCURACY.getValue()) || sortType.equals(SortType.RECENCY.getValue()));
+    }
+
+    private String convertSortTypeForNaver(String sortType) {
+        if (sortType.equals(SortType.ACCURACY.getValue())) {
+            return SortType.SIM.getValue();
+        } else {
+            return SortType.DATE.getValue();
         }
     }
 }
