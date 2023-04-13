@@ -1,5 +1,6 @@
 package com.soon.domain;
 
+import com.soon.dto.KeywordRankDto;
 import com.soon.exception.ErrorCode;
 import com.soon.exception.RequestException;
 import lombok.Getter;
@@ -37,6 +38,10 @@ public class Keyword {
 
     public Keyword(String word) {
         this.word = convertUseCaseWord(word);
+    }
+
+    public KeywordRankDto createKeywordRankDto() {
+        return new KeywordRankDto(this.word, this.count);
     }
 
     private boolean isCountMinimum(Long count) {
