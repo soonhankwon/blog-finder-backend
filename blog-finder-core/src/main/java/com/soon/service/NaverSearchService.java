@@ -24,14 +24,14 @@ public class NaverSearchService implements SearchService<Mono<List<SearchResultD
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
         SortType type = SortType.valueOf(sortType.toUpperCase());
-        if (type.equals(SortType.SIM)) {
-            return searchResultToMono(query, type);
-        }
-        if (type.equals(SortType.DATE)) {
-            return searchResultToMono(query, type);
-        } else {
+        if (!isTypeValid(type)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         }
+        return searchResultToMono(query, type);
+    }
+
+    private boolean isTypeValid(SortType type) {
+        return type.equals(SortType.SIM) || type.equals(SortType.DATE);
     }
 
     private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
