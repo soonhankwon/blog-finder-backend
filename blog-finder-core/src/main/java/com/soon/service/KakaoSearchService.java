@@ -18,19 +18,20 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
-public class KakaoSearchService implements SearchService<Mono<List<SearchResultDto>>>  {
+public class KakaoSearchService implements SearchService<Mono<List<SearchResultDto>>> {
     private final ApiReqValueStorage apiReqValueStorage;
 
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
-        if (sortType.equals(SortType.ACCURACY.getValue())) {
-            return searchResultToMono(query, SortType.ACCURACY);
-        }
-        if (sortType.equals(SortType.RECENCY.getValue())) {
-            return searchResultToMono(query, SortType.RECENCY);
-        } else {
+        SortType type = SortType.valueOf(sortType.toUpperCase());
+        if (!isSortTypeValid(type)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         }
+        return searchResultToMono(query, type);
+    }
+
+    private boolean isSortTypeValid(SortType type) {
+        return type.equals(SortType.ACCURACY) || type.equals(SortType.RECENCY);
     }
 
     private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
