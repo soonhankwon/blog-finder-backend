@@ -16,4 +16,11 @@ public class SortTypeTest {
         assertThat(str1).isEqualTo("accuracy");
         assertThat(str2).isEqualTo("recency");
     }
+
+    @Test
+    @DisplayName("SortType valueOf 테스트")
+    void enumValueOf() {
+        String str = "recency";
+        assertThat(SortType.valueOf(str.toUpperCase())).isEqualTo(SortType.RECENCY);
+    }
 }
