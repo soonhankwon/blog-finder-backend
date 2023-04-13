@@ -14,22 +14,22 @@ public class KeywordTest {
     @DisplayName("키워드 공백 제거 테스트")
     void removeSpaceWord() {
         Keyword keyword = new Keyword("!@#     SoOn");
-        assertThat(keyword.getWord()).isEqualTo("soon");
+        assertThat(keyword).isEqualTo(new Keyword("soon"));
     }
 
     @Test
     @DisplayName("키워드 특수문자 제거 & 소문자로 변환 테스트")
     void convertLowerCase() {
         Keyword keyword = new Keyword("!@#SoOn", 1L);
-        assertThat(keyword.getWord()).isEqualTo("soon");
+        assertThat(keyword).isEqualTo(new Keyword("soon", 1L));
     }
 
     @Test
     @DisplayName("키워드 검색횟수 증가 테스트")
     void increaseCount() {
-        Keyword keyword = new Keyword("Soon", 1L);
+        Keyword keyword = new Keyword(1L,"Soon", 1L);
         keyword.increaseCount();
-        assertThat(keyword.getCount()).isEqualTo(2L);
+        assertThat(keyword).isEqualTo(new Keyword(1L,"Soon", 2L));
     }
 
     @Test
