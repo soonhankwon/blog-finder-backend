@@ -30,7 +30,7 @@ public class KeywordService {
     public List<KeywordRankDto> getTop10KewordsAndCount() {
         List<Keyword> top10Keywords = keywordRepository.findTop10ByOrderByCountDesc();
         return top10Keywords.stream()
-                .map(keyword -> new KeywordRankDto(keyword.getWord(),keyword.getCount()))
+                .map(keyword -> keyword.createKeywordRankDto())
                 .collect(Collectors.toList());
     }
 }

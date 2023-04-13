@@ -1,15 +1,17 @@
 package com.soon.domain;
 
+import com.soon.dto.KeywordRankDto;
 import com.soon.exception.ErrorCode;
 import com.soon.exception.RequestException;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "keyword", indexes = {
         @Index(name = "idx_word", columnList = "word"),
         @Index(name = "idx_count", columnList = "count")})
@@ -39,6 +41,18 @@ public class Keyword {
         this.word = convertUseCaseWord(word);
     }
 
+    public String getWord() {
+        return this.word;
+    }
+
+    public KeywordRankDto createKeywordRankDto() {
+        return new KeywordRankDto(this.word, this.count);
+    }
+
+    public void increaseCount() {
+        this.count++;
+    }
+
     private boolean isCountMinimum(Long count) {
         return count >= MIN_COUNT;
     }
@@ -51,11 +65,20 @@ public class Keyword {
         return word.replaceAll("[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]","");
     }
 
-    public void increaseCount() {
-        this.count++;
-    }
-
     private boolean isWordNullOrEmpty(String word) {
         return word == null || word.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Keyword keyword = (Keyword) o;
+        return Objects.equals(id, keyword.id) && Objects.equals(word, keyword.word) && Objects.equals(count, keyword.count);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, word, count);
     }
 }
