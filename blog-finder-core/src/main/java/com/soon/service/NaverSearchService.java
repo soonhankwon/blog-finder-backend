@@ -2,8 +2,6 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
-import com.soon.exception.ErrorCode;
-import com.soon.exception.RequestException;
 import com.soon.utils.ApiReqValueStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
