@@ -11,7 +11,7 @@ public class SearchEvent extends ApplicationEvent {
         this.keyword = keyword;
     }
 
-    public Keyword getKeyword() {
-        return this.keyword;
+    public String getWord() {
+        return this.keyword.getWord();
     }
 }
