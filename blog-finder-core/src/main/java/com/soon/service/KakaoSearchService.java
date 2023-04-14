@@ -29,7 +29,7 @@ public class KakaoSearchService implements SearchService<Mono<List<SearchResultD
     private final int kakaoPagination = 10;
 
     @Override
-    public Mono<List<SearchResultDto>> search(String query, String sortType) {
+    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, String sortType) {
         return WebClient.builder()
                 .baseUrl(kakaoUrl)
                 .build().get()

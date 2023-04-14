@@ -31,7 +31,7 @@ public class NaverSearchService implements SearchService<Mono<List<SearchResultD
     private final int naverDisplay = 10;
 
     @Override
-    public Mono<List<SearchResultDto>> search(String query, String sortType) {
+    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, String sortType) {
         return WebClient.builder()
                 .baseUrl(naverUrl)
                 .build().get()
