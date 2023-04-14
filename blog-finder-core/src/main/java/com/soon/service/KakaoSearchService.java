@@ -1,6 +1,5 @@
 package com.soon.service;
 
-import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,16 +30,12 @@ public class KakaoSearchService implements SearchService<Mono<List<SearchResultD
 
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
-        return searchResultToMono(query, SortType.valueOf(sortType.toUpperCase()));
-    }
-
-    private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
         return WebClient.builder()
                 .baseUrl(kakaoUrl)
                 .build().get()
                 .uri(builder -> builder.path(kakaoPath)
                         .queryParam("query", query)
-                        .queryParam("sort", sortType.getValue())
+                        .queryParam("sort", sortType)
                         .queryParam("page", kakaoPagination)
                         .build())
                 .header("Authorization", "KakaoAK " + kakaoKey)

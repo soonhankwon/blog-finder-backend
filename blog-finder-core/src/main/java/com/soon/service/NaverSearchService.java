@@ -1,6 +1,5 @@
 package com.soon.service;
 
-import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,17 +32,13 @@ public class NaverSearchService implements SearchService<Mono<List<SearchResultD
 
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
-        return searchResultToMono(query, SortType.valueOf(sortType.toUpperCase()));
-    }
-
-    private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
         return WebClient.builder()
                 .baseUrl(naverUrl)
                 .build().get()
                 .uri(uriBuilder -> uriBuilder.path(naverPath)
                         .queryParam("query", query)
                         .queryParam("display", naverDisplay)
-                        .queryParam("sort", sortType.getValue())
+                        .queryParam("sort", sortType)
                         .build())
                 .header("X-Naver-Client-Id", naverClientId)
                 .header("X-Naver-Client-Secret", naverClientSecret)
