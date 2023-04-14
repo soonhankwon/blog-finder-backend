@@ -2,10 +2,8 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
-import com.soon.exception.ErrorCode;
-import com.soon.exception.RequestException;
-import com.soon.utils.ApiReqValueStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -19,7 +17,17 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Service
 public class KakaoSearchService implements SearchService<Mono<List<SearchResultDto>>> {
-    private final ApiReqValueStorage apiReqValueStorage;
+
+    @Value("${kakao.api.url}")
+    private String kakaoUrl;
+
+    @Value("${kakao.api.path}")
+    private String kakaoPath;
+
+    @Value("${kakao.api.key}")
+    private String kakaoKey;
+
+    private final int kakaoPagination = 10;
 
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
@@ -28,14 +36,14 @@ public class KakaoSearchService implements SearchService<Mono<List<SearchResultD
 
     private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
         return WebClient.builder()
-                .baseUrl(apiReqValueStorage.getKakaoUrl())
+                .baseUrl(kakaoUrl)
                 .build().get()
-                .uri(builder -> builder.path(apiReqValueStorage.getKakaoPath())
+                .uri(builder -> builder.path(kakaoPath)
                         .queryParam("query", query)
                         .queryParam("sort", sortType.getValue())
-                        .queryParam("page", apiReqValueStorage.getKakaoPagination())
+                        .queryParam("page", kakaoPagination)
                         .build())
-                .header("Authorization", "KakaoAK " + apiReqValueStorage.getKakaoKey())
+                .header("Authorization", "KakaoAK " + kakaoKey)
                 .retrieve()
                 .bodyToMono(Map.class)
                 .map(map -> (List<Map>) map.get("documents"))

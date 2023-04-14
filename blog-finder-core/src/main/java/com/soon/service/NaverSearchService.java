@@ -2,10 +2,8 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
-import com.soon.exception.ErrorCode;
-import com.soon.exception.RequestException;
-import com.soon.utils.ApiReqValueStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -19,7 +17,19 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Service
 public class NaverSearchService implements SearchService<Mono<List<SearchResultDto>>> {
-    private final ApiReqValueStorage apiReqValueStorage;
+    @Value("${naver.api.url}")
+    private String naverUrl;
+
+    @Value("${naver.api.path}")
+    private String naverPath;
+
+    @Value("${naver.api.client.id}")
+    private String naverClientId;
+
+    @Value("${naver.api.client.secret}")
+    private String naverClientSecret;
+
+    private final int naverDisplay = 10;
 
     @Override
     public Mono<List<SearchResultDto>> search(String query, String sortType) {
@@ -28,15 +38,15 @@ public class NaverSearchService implements SearchService<Mono<List<SearchResultD
 
     private Mono<List<SearchResultDto>> searchResultToMono(String query, SortType sortType) {
         return WebClient.builder()
-                .baseUrl(apiReqValueStorage.getNaverUrl())
+                .baseUrl(naverUrl)
                 .build().get()
-                .uri(uriBuilder -> uriBuilder.path(apiReqValueStorage.getNaverPath())
+                .uri(uriBuilder -> uriBuilder.path(naverPath)
                         .queryParam("query", query)
-                        .queryParam("display", apiReqValueStorage.getNaverDisplay())
+                        .queryParam("display", naverDisplay)
                         .queryParam("sort", sortType.getValue())
                         .build())
-                .header("X-Naver-Client-Id", apiReqValueStorage.getNaverClientId())
-                .header("X-Naver-Client-Secret", apiReqValueStorage.getNaverClientSecret())
+                .header("X-Naver-Client-Id", naverClientId)
+                .header("X-Naver-Client-Secret", naverClientSecret)
                 .retrieve()
                 .bodyToMono(Map.class)
                 .map(map -> (List<Map>) map.get("items"))
