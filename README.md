@@ -79,9 +79,7 @@ docker-compose start
 > - blog-finder-api : 비동기 방식으로 오픈 API에서 데이터를 받아서 제공 & consumer 모듈로 실시간 데이터 전송
 > - blog-finder-core : keyword **도메인** 모듈
 > - blog-finder-consumer : kafka message broker를 기반으로한 **데이터 수집 모듈** & DB로 실시간 데이터를 저장
-> - blog-finder-search : core 에서 구현하는 search service의 인터페이스를 가지고 있는 모듈
 > - API -> CORE <- CONSUMER
-> - CORE -> SEARCH 의 의존성 방향을 가지고 있다.
 > - CORE는 **도메인**과 핵심 비즈니스로직 담당. 따라서 CORE는 도메인에만 집중할 수 있도록 구성
 > - 도메인 자체의 서비스 로직에 집중할 수 있어 테스트 용이 및 도메인을 사용하는 타 모듈에서 중복 코드를 제거할 수 있도록 개선
 > - MySQL DB는 http://localhost:3306/{DB} 사용하도록 구축
