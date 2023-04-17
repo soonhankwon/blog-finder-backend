@@ -2,7 +2,9 @@ package com.soon.service;
 
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -14,8 +16,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
+@Qualifier("kakaoSearchService")
 @Service
-public class KakaoSearchService implements SearchService<Mono<List<SearchResultDto>>> {
+public class KakaoSearchService implements SearchService {
 
     @Value("${kakao.api.url}")
     private String kakaoUrl;
