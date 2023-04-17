@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-@Qualifier("kakaoSearchService")
 @Service
 public class KakaoSearchService implements SearchService {
 

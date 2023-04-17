@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-@Qualifier("naverSearchService")
 @Service
 public class NaverSearchService implements SearchService {
     @Value("${naver.api.url}")

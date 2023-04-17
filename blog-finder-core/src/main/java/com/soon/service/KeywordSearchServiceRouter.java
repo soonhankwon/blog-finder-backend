@@ -16,9 +16,8 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KeywordSearchServiceRouter {
-    private final SearchService kakaoSearchService;
-    private final SearchService naverSearchService;
+public class KeywordSearchServiceRouter implements SearchServiceSelector {
+    private final List<SearchService> searchServices;
     private static final String BREAKER = "breaker";
 
     @CircuitBreaker(name = BREAKER, fallbackMethod = "searchByNaver")
@@ -27,7 +26,8 @@ public class KeywordSearchServiceRouter {
         if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         } else {
-            return kakaoSearchService.blogSearchByKeyword(query, sortType);
+            return findSearchService(KakaoSearchService.class)
+                    .blogSearchByKeyword(query, sortType);
         }
     }
 
@@ -36,8 +36,17 @@ public class KeywordSearchServiceRouter {
         if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         } else {
-            return naverSearchService.blogSearchByKeyword(query, convertSortTypeForNaver(sortType));
+            return findSearchService(NaverSearchService.class)
+                    .blogSearchByKeyword(query, convertSortTypeForNaver(sortType));
         }
+    }
+
+    @Override
+    public SearchService findSearchService(Class<? extends SearchService> serviceClass) {
+        return searchServices.stream()
+                .filter(e -> e.getClass().equals(serviceClass))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private boolean isSortTypeValid(String sortType) {
