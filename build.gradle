@@ -58,26 +58,17 @@ project(':blog-finder-core') {
     bootJar { enabled = false }
     jar { enabled = true }
     dependencies {
-        implementation(project(":blog-finder-search"))
     }
 }
 
 project(':blog-finder-api') {
     dependencies {
         implementation(project(":blog-finder-core"))
-        implementation(project(":blog-finder-search"))
     }
 }
 
 project(':blog-finder-consumer') {
     dependencies {
         implementation(project(":blog-finder-core"))
-    }
-}
-
-project(':blog-finder-search') {
-    bootJar { enabled = false }
-    jar { enabled = true }
-    dependencies {
     }
 }
