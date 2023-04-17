@@ -1,8 +1,8 @@
 package com.soon.service;
 
+import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,14 +32,14 @@ public class NaverSearchService implements SearchService {
     private final int naverDisplay = 10;
 
     @Override
-    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, String sortType) {
+    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, SortType sortType) {
         return WebClient.builder()
                 .baseUrl(naverUrl)
                 .build().get()
                 .uri(uriBuilder -> uriBuilder.path(naverPath)
                         .queryParam("query", query)
                         .queryParam("display", naverDisplay)
-                        .queryParam("sort", sortType)
+                        .queryParam("sort", sortType.getValue())
                         .build())
                 .header("X-Naver-Client-Id", naverClientId)
                 .header("X-Naver-Client-Secret", naverClientSecret)
