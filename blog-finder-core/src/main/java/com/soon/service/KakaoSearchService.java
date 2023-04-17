@@ -1,10 +1,9 @@
 package com.soon.service;
 
+import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -31,13 +30,13 @@ public class KakaoSearchService implements SearchService {
     private final int kakaoPagination = 10;
 
     @Override
-    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, String sortType) {
+    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, SortType sortType) {
         return WebClient.builder()
                 .baseUrl(kakaoUrl)
                 .build().get()
                 .uri(builder -> builder.path(kakaoPath)
                         .queryParam("query", query)
-                        .queryParam("sort", sortType)
+                        .queryParam("sort", sortType.getValue())
                         .queryParam("page", kakaoPagination)
                         .build())
                 .header("Authorization", "KakaoAK " + kakaoKey)
