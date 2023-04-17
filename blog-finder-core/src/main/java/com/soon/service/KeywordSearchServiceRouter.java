@@ -17,9 +17,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class KeywordSearchServiceRouter {
-
-    private final KakaoSearchService kakaoSearchService;
-    private final NaverSearchService naverSearchService;
+    private final SearchService kakaoSearchService;
+    private final SearchService naverSearchService;
     private static final String BREAKER = "breaker";
 
     @CircuitBreaker(name = BREAKER, fallbackMethod = "searchByNaver")
