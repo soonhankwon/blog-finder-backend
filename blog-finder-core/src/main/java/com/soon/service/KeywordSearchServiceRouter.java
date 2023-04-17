@@ -16,30 +16,27 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KeywordSearchServiceRouter implements SearchServiceRouter<Mono<List<SearchResultDto>>> {
-
-    private final KakaoSearchService kakaoSearchService;
-    private final NaverSearchService naverSearchService;
+public class KeywordSearchServiceRouter {
+    private final SearchService kakaoSearchService;
+    private final SearchService naverSearchService;
     private static final String BREAKER = "breaker";
 
-    @Override
     @CircuitBreaker(name = BREAKER, fallbackMethod = "searchByNaver")
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByKakao(String query, String sortType) {
         if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         } else {
-            return kakaoSearchService.search(query, sortType);
+            return kakaoSearchService.blogSearchByKeyword(query, sortType);
         }
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByNaver(String query, String sortType, RuntimeException e) {
         if (!isSortTypeValid(sortType)) {
             throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
         } else {
-            return naverSearchService.search(query, convertSortTypeForNaver(sortType));
+            return naverSearchService.blogSearchByKeyword(query, convertSortTypeForNaver(sortType));
         }
     }
 

@@ -2,6 +2,7 @@ package com.soon.service;
 
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,8 +15,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
+@Qualifier("naverSearchService")
 @Service
-public class NaverSearchService implements SearchService<Mono<List<SearchResultDto>>> {
+public class NaverSearchService implements SearchService {
     @Value("${naver.api.url}")
     private String naverUrl;
 
@@ -31,7 +33,7 @@ public class NaverSearchService implements SearchService<Mono<List<SearchResultD
     private final int naverDisplay = 10;
 
     @Override
-    public Mono<List<SearchResultDto>> search(String query, String sortType) {
+    public Mono<List<SearchResultDto>> blogSearchByKeyword(String query, String sortType) {
         return WebClient.builder()
                 .baseUrl(naverUrl)
                 .build().get()
