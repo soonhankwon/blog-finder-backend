@@ -3,6 +3,7 @@ package com.soon.service;
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +17,7 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
+@Qualifier("naverSearchService")
 public class NaverSearchService implements SearchService {
     @Value("${naver.api.url}")
     private String naverUrl;
