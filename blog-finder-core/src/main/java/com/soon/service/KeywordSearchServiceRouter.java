@@ -13,20 +13,21 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class KeywordSearchServiceRouter {
-    private final SearchService kakaoSearchService;
-    private final SearchService naverSearchService;
+    private final SearchService searchService;
+    private final SearchService fallBackSearchService;
+
     private static final String BREAKER = "breaker";
 
     @CircuitBreaker(name = BREAKER, fallbackMethod = "searchByNaver")
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByKakao(String query, SortType sortType) {
         sortType.validSortType();
-        return kakaoSearchService.blogSearchByKeyword(query, sortType);
+        return searchService.blogSearchByKeyword(query, sortType);
     }
 
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByNaver(String query, SortType sortType, RuntimeException e) {
         sortType.validSortType();
-        return naverSearchService.blogSearchByKeyword(query, sortType.convertSortTypeForNaver());
+        return fallBackSearchService.blogSearchByKeyword(query, sortType.convertSortTypeForNaver());
     }
 }
