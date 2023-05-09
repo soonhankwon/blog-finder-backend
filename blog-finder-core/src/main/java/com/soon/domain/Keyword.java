@@ -2,7 +2,7 @@ package com.soon.domain;
 
 import com.soon.dto.KeywordRankDto;
 import com.soon.exception.ErrorCode;
-import com.soon.exception.RequestException;
+import com.soon.exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -28,13 +28,29 @@ public class Keyword {
 
     public Keyword(String word, Long count) {
         if(isWordNullOrEmpty(word)) {
-            throw new RequestException(ErrorCode.KEYWORD_INVALID);
+            throw new ApiException(ErrorCode.KEYWORD_INVALID);
         }
         if(!isCountMinimum(count)) {
-            throw new RequestException(ErrorCode.SEARCH_COUNT_INVALID);
+            throw new ApiException(ErrorCode.SEARCH_COUNT_INVALID);
         }
         this.word = convertUseCaseWord(word);
         this.count = MIN_COUNT;
+    }
+
+    private boolean isWordNullOrEmpty(String word) {
+        return word == null || word.isEmpty();
+    }
+
+    private boolean isCountMinimum(Long count) {
+        return count >= MIN_COUNT;
+    }
+
+    private String convertUseCaseWord(String word) {
+        return removeSpecialChar(word).toLowerCase();
+    }
+
+    private String removeSpecialChar(String word) {
+        return word.replaceAll("[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]","");
     }
 
     public Keyword(String word) {
@@ -51,22 +67,6 @@ public class Keyword {
 
     public void increaseCount() {
         this.count++;
-    }
-
-    private boolean isCountMinimum(Long count) {
-        return count >= MIN_COUNT;
-    }
-
-    private String convertUseCaseWord(String word) {
-        return removeSpecialChar(word).toLowerCase();
-    }
-
-    private String removeSpecialChar(String word) {
-        return word.replaceAll("[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]","");
-    }
-
-    private boolean isWordNullOrEmpty(String word) {
-        return word == null || word.isEmpty();
     }
 
     @Override
