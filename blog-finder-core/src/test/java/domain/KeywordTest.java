@@ -1,7 +1,7 @@
 package domain;
 
 import com.soon.domain.Keyword;
-import com.soon.exception.RequestException;
+import com.soon.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ public class KeywordTest {
     void keywordWithEmpty() {
         assertThatThrownBy(() -> {
             new Keyword("", 1L);
-        }).isInstanceOf(RequestException.class);
+        }).isInstanceOf(ApiException.class);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class KeywordTest {
     void keywordWithNull() {
         assertThatThrownBy(() -> {
             new Keyword(null, 1L);
-        }).isInstanceOf(RequestException.class);
+        }).isInstanceOf(ApiException.class);
     }
 
     @Test
@@ -53,6 +53,6 @@ public class KeywordTest {
     void countUnderTheMinimum() {
         assertThatThrownBy(() -> {
             new Keyword("soon", -1L);
-        }).isInstanceOf(RequestException.class);
+        }).isInstanceOf(ApiException.class);
     }
 }
