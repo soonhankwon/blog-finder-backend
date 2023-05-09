@@ -1,7 +1,7 @@
 package com.soon.domain;
 
 import com.soon.exception.ErrorCode;
-import com.soon.exception.RequestException;
+import com.soon.exception.ApiException;
 
 public enum SortType {
     ACCURACY("accuracy"),
@@ -21,7 +21,7 @@ public enum SortType {
 
     public void validSortType() {
         if(!this.equals(SortType.ACCURACY) && !this.equals(SortType.RECENCY)) {
-            throw new RequestException(ErrorCode.SORT_TYPE_INVALID);
+            throw new ApiException(ErrorCode.SORT_TYPE_INVALID);
         }
     }
 
