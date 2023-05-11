@@ -16,7 +16,7 @@ import java.util.List;
 public class KeywordRankController {
     private final KeywordService keywordService;
 
-    @GetMapping("/keyword/rank")
+    @GetMapping("/keywords/rank")
     @Operation(summary = "인기 검색어 TOP10 과 인기 검색어 별 검색횟수 API")
     public List<KeywordRankDto> getKeywordRankAndCount() {
         return keywordService.getTop10KewordsAndCount();
