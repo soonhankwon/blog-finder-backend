@@ -12,9 +12,9 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class KeywordSearchServiceRouter {
-    private final SearchService searchService;
-    private final SearchService fallBackSearchService;
+public class BlogSearchServiceRouter {
+    private final BlogSearchService blogSearchService;
+    private final BlogSearchService fallBackBlogSearchService;
 
     private static final String BREAKER = "breaker";
 
@@ -22,12 +22,12 @@ public class KeywordSearchServiceRouter {
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByKakao(String query, SortType sortType) {
         sortType.validSortType();
-        return searchService.blogSearchByKeyword(query, sortType);
+        return blogSearchService.blogSearchByKeyword(query, sortType);
     }
 
     @Transactional(readOnly = true)
     public Mono<List<SearchResultDto>> searchByNaver(String query, SortType sortType, RuntimeException e) {
         sortType.validSortType();
-        return fallBackSearchService.blogSearchByKeyword(query, sortType.convertSortTypeForNaver());
+        return fallBackBlogSearchService.blogSearchByKeyword(query, sortType.convertSortTypeForNaver());
     }
 }

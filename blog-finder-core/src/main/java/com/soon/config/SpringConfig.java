@@ -1,8 +1,8 @@
 package com.soon.config;
 
-import com.soon.service.KakaoSearchService;
-import com.soon.service.NaverSearchService;
-import com.soon.service.SearchService;
+import com.soon.service.KakaoBlogSearchService;
+import com.soon.service.NaverBlogSearchService;
+import com.soon.service.BlogSearchService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
 public class SpringConfig {
 
     @Bean
-    public SearchService searchService() {
-        return new KakaoSearchService();
+    public BlogSearchService searchService() {
+        return new KakaoBlogSearchService();
     }
 
     @Bean
-    public SearchService fallBackSearchService() {
-        return new NaverSearchService();
+    public BlogSearchService fallBackSearchService() {
+        return new NaverBlogSearchService();
     }
 }
