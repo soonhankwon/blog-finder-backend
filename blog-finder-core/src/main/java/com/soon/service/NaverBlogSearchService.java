@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class NaverSearchService implements SearchService {
+public class NaverBlogSearchService implements BlogSearchService {
     @Value("${naver.api.url}")
     private String naverUrl;
 

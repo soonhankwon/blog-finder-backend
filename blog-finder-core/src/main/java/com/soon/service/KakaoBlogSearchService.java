@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class KakaoSearchService implements SearchService {
+public class KakaoBlogSearchService implements BlogSearchService {
 
     @Value("${kakao.api.url}")
     private String kakaoUrl;

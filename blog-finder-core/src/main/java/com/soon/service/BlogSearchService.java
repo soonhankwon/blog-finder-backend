@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface SearchService {
+public interface BlogSearchService {
     Mono<List<SearchResultDto>> blogSearchByKeyword(String query, SortType sortType);
 }
