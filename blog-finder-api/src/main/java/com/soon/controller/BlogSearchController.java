@@ -19,7 +19,7 @@ import java.util.List;
 public class BlogSearchController {
     private final BlogSearchServiceRouter blogSearchServiceRouter;
 
-    @GetMapping("/blog")
+    @GetMapping("/blogs")
     @Operation(summary = "카카오 정확도순 & 최신순 블로그 검색 API")
     public Mono<List<SearchResultDto>> blogSearchByKeyword(@RequestParam("query") String query, @RequestParam("sortType") SortType sortType) {
         return blogSearchServiceRouter.searchByKakao(query, sortType);
