@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class SearchEventAspect {
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Before(value = "execution(* com.soon.controller.ApiController.blogSearchByKeyword(..)) && args(query,sortType)", argNames = "query,sortType")
+    @Before(value = "execution(* com.soon.controller.BlogSearchController.blogSearchByKeyword(..)) && args(query,sortType)", argNames = "query,sortType")
     public void beforeBlogSearch(String query, SortType sortType) {
         applicationEventPublisher.publishEvent(new SearchEvent(this, new Keyword(query)));
     }
