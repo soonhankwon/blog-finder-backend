@@ -2,7 +2,6 @@ package com.soon.service;
 
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Qualifier("fallbackSearchService")
 public class NaverBlogSearchService implements BlogSearchService {
     @Value("${naver.api.url}")
     private String naverUrl;

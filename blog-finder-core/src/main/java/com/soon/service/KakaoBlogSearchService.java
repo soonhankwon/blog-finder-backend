@@ -3,7 +3,6 @@ package com.soon.service;
 import com.soon.domain.SortType;
 import com.soon.dto.SearchResultDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Primary
 public class KakaoBlogSearchService implements BlogSearchService {
 
     @Value("${kakao.api.url}")
