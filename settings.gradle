@@ -2,5 +2,3 @@ rootProject.name = 'blog-finder-backend'
 include 'blog-finder-api'
 include 'blog-finder-core'
 include 'blog-finder-consumer'
-include 'blog-finder-search'
-
